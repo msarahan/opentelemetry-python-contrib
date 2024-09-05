@@ -90,8 +90,9 @@ def _wrap_render(tracer, wrapped, instance, args, kwargs):
         kind=SpanKind.INTERNAL,
     ) as span:
         if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+            pass
+            # span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+            # span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
 
 @_with_tracer_wrapper
@@ -102,8 +103,9 @@ def _wrap_build(tracer, wrapped, instance, args, kwargs):
             kind=SpanKind.INTERNAL,
     ) as span:
         if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+            pass
+            # span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+            # span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
 
 class CondaBuildInstrumentor(BaseInstrumentor):

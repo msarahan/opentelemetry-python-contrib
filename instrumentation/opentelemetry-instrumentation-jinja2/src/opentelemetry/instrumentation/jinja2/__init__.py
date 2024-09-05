@@ -78,6 +78,7 @@ def _wrap_render(tracer, wrapped, instance, args, kwargs):
         kind=SpanKind.INTERNAL,
     ) as span:
         if span.is_recording():
+            import pdb; pdb.set_trace()
             template_name = instance.name or DEFAULT_TEMPLATE_NAME
             span.set_attribute(ATTRIBUTE_JINJA2_TEMPLATE_NAME, template_name)
         return wrapped(*args, **kwargs)
