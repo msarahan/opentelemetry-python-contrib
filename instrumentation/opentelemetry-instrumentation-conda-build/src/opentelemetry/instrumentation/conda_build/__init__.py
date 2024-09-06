@@ -41,8 +41,9 @@ import logging
 from typing import Collection
 
 import conda_build
-import conda_build.metadata
 import conda_build.api
+import conda_build.metadata
+import conda_build.render
 from wrapt import wrap_function_wrapper as _wrap
 
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
@@ -50,6 +51,9 @@ from opentelemetry.instrumentation.conda_build.package import _instruments
 from opentelemetry.instrumentation.conda_build.version import __version__
 from opentelemetry.instrumentation.utils import unwrap
 from opentelemetry.trace import SpanKind, get_tracer
+
+from opentelemetry.metrics import get_meter
+from opentelemetry.instrumentation.system_metrics import SystemMetricsInstrumentor
 
 logger = logging.getLogger(__name__)
 
@@ -69,22 +73,20 @@ def _with_tracer_wrapper(func):
 
     return _with_tracer
 
+def _with_metrics_wrapper(func):
+    """Helper for providing tracer for wrapper functions."""
 
-@_with_tracer_wrapper
-def _wrap_parse_again(tracer, wrapped, instance, args, kwargs):
-    """Wrap `Metadata.parse_again()`"""
-    with tracer.start_as_current_span(
-        "conda_build.MetaData.parse_again",
-        kind=SpanKind.INTERNAL,
-    ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
-        return wrapped(*args, **kwargs)
+    def _with_metrics(metrics):
+        def wrapper(wrapped, instance, args, kwargs):
+            return func(metrics, wrapped, instance, args, kwargs)
+
+        return wrapper
+
+    return _with_metrics
+
 
 @_with_tracer_wrapper
 def _wrap_render(tracer, wrapped, instance, args, kwargs):
-    """Wrap `api.render()`"""
     with tracer.start_as_current_span(
         "conda_build.api.render",
         kind=SpanKind.INTERNAL,
@@ -95,9 +97,9 @@ def _wrap_render(tracer, wrapped, instance, args, kwargs):
             # span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
 
+
 @_with_tracer_wrapper
 def _wrap_build(tracer, wrapped, instance, args, kwargs):
-    """Wrap `api.render()`"""
     with tracer.start_as_current_span(
             "conda_build.api.build",
             kind=SpanKind.INTERNAL,
@@ -107,6 +109,126 @@ def _wrap_build(tracer, wrapped, instance, args, kwargs):
             # span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
             # span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_get_contents(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+        "conda_build.MetaData._get_contents",
+        kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_parse_again(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+        "conda_build.MetaData.parse_again",
+        kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_get_recipe_text(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+            "conda_build.MetaData.get_recipe_text",
+            kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_get_output_metadata(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+            "conda_build.MetaData.get_output_metadata",
+            kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        return wrapped(*args, **kwargs)
+
+@_with_tracer_wrapper
+def _wrap_get_used_vars(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+            "conda_build.MetaData.get_used_vars",
+            kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_get_env_dependencies(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+            "conda_build.render.get_env_dependencies",
+            kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_get_execute_download_actions(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+            "conda_build.render.execute_download_actions",
+            kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_get_upstream_pins(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+            "conda_build.render.get_upstream_pins",
+            kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_add_upstream_pins(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+            "conda_build.render.add_upstream_pins",
+            kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
+def _wrap_finalize_metadata(tracer, wrapped, instance, args, kwargs):
+    with tracer.start_as_current_span(
+            "conda_build.render.finalize_metadata",
+            kind=SpanKind.INTERNAL,
+    ) as span:
+        if span.is_recording():
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        return wrapped(*args, **kwargs)
+
 
 class CondaBuildInstrumentor(BaseInstrumentor):
     """An instrumentor for conda-build
@@ -126,9 +248,43 @@ class CondaBuildInstrumentor(BaseInstrumentor):
             schema_url="https://opentelemetry.io/schemas/1.11.0",
         )
 
-        _wrap(conda_build.metadata, "MetaData.parse_again", _wrap_parse_again(tracer))
+        metrics_provider = kwargs.get("metrics_provider")
+        meter = get_meter(
+            __name__,
+            __version__,
+            metrics_provider,
+            schema_url="https://opentelemetry.io/schemas/1.11.0",
+        )
+
+        # to configure custom metrics
+        configuration = {
+            "system.memory.usage": ["used", "free", "cached"],
+            "system.cpu.time": ["idle", "user", "system", "irq"],
+            "system.network.io": ["transmit", "receive"],
+            "process.runtime.memory": ["rss", "vms"],
+            "process.runtime.cpu.time": ["user", "system"],
+            "process.runtime.context_switches": ["involuntary", "voluntary"],
+        }
+        SystemMetricsInstrumentor(config=configuration).instrument()
+
         _wrap(conda_build.api, "render", _wrap_render(tracer))
-        _wrap(conda_build.api, "build", _wrap_render(tracer))
+        _wrap(conda_build.api, "build", _wrap_build(tracer))
+
+        _wrap(conda_build.metadata, "MetaData._get_contents", _wrap_get_contents(tracer))
+        _wrap(conda_build.metadata, "MetaData.parse_again", _wrap_parse_again(tracer))
+        _wrap(conda_build.metadata, "MetaData.get_recipe_text", _wrap_get_recipe_text(tracer))
+        _wrap(conda_build.metadata, "MetaData.get_output_metadata", _wrap_get_output_metadata(tracer))
+        _wrap(conda_build.metadata, "MetaData.get_used_vars", _wrap_get_used_vars(tracer))
+
+        _wrap(conda_build.render, "get_env_dependencies", _wrap_get_env_dependencies(tracer))
+        _wrap(conda_build.render, "get_execute_download_actions", _wrap_get_execute_download_actions(tracer))
+        _wrap(conda_build.render, "get_upstream_pins", _wrap_get_upstream_pins(tracer))
+        _wrap(conda_build.render, "add_upstream_pins", _wrap_add_upstream_pins(tracer))
+        _wrap(conda_build.render, "", _wrap_add_upstream_pins(tracer))
 
     def _uninstrument(self, **kwargs):
         unwrap(conda_build.metadata.MetaData, "parse_again")
+        unwrap(conda_build.metadata.MetaData, "_get_contents")
+        unwrap(conda_build.metadata.MetaData, "get_recipe_text")
+        unwrap(conda_build.metadata.MetaData, "get_output_metadata")
+        unwrap(conda_build.metadata.MetaData, "get_used_vars")
