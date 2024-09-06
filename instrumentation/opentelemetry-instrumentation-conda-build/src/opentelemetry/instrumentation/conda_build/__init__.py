@@ -117,9 +117,9 @@ def _wrap_get_contents(tracer, wrapped, instance, args, kwargs):
         "conda_build.MetaData._get_contents",
         kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -129,9 +129,9 @@ def _wrap_parse_again(tracer, wrapped, instance, args, kwargs):
         "conda_build.MetaData.parse_again",
         kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -141,9 +141,9 @@ def _wrap_get_recipe_text(tracer, wrapped, instance, args, kwargs):
             "conda_build.MetaData.get_recipe_text",
             kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -153,9 +153,9 @@ def _wrap_get_output_metadata(tracer, wrapped, instance, args, kwargs):
             "conda_build.MetaData.get_output_metadata",
             kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
 
 @_with_tracer_wrapper
@@ -164,9 +164,9 @@ def _wrap_get_used_vars(tracer, wrapped, instance, args, kwargs):
             "conda_build.MetaData.get_used_vars",
             kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, instance.dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, instance.meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -176,9 +176,9 @@ def _wrap_get_env_dependencies(tracer, wrapped, instance, args, kwargs):
             "conda_build.render.get_env_dependencies",
             kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -188,9 +188,9 @@ def _wrap_execute_download_actions(tracer, wrapped, instance, args, kwargs):
             "conda_build.render.execute_download_actions",
             kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -200,9 +200,9 @@ def _wrap_get_upstream_pins(tracer, wrapped, instance, args, kwargs):
             "conda_build.render.get_upstream_pins",
             kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -212,9 +212,9 @@ def _wrap_add_upstream_pins(tracer, wrapped, instance, args, kwargs):
             "conda_build.render.add_upstream_pins",
             kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -224,9 +224,9 @@ def _wrap_finalize_metadata(tracer, wrapped, instance, args, kwargs):
             "conda_build.render.finalize_metadata",
             kind=SpanKind.INTERNAL,
     ) as span:
-        if span.is_recording():
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
-            span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
+        # if span.is_recording():
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_PACKAGE_NAME, args[0].dist())
+        #     span.set_attribute(ATTRIBUTE_CONDA_BUILD_RECIPE_PATH, args[0].meta_path)
         return wrapped(*args, **kwargs)
 
 
@@ -272,7 +272,7 @@ class CondaBuildInstrumentor(BaseInstrumentor):
 
         _wrap(conda_build.metadata, "MetaData._get_contents", _wrap_get_contents(tracer))
         _wrap(conda_build.metadata, "MetaData.parse_again", _wrap_parse_again(tracer))
-        # _wrap(conda_build.metadata, "MetaData.get_recipe_text", _wrap_get_recipe_text(tracer))
+        _wrap(conda_build.metadata, "MetaData.get_recipe_text", _wrap_get_recipe_text(tracer))
         _wrap(conda_build.metadata, "MetaData.get_output_metadata", _wrap_get_output_metadata(tracer))
         _wrap(conda_build.metadata, "MetaData.get_used_vars", _wrap_get_used_vars(tracer))
 
