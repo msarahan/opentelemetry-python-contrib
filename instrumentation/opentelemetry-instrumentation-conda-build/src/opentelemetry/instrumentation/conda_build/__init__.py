@@ -183,7 +183,7 @@ def _wrap_get_env_dependencies(tracer, wrapped, instance, args, kwargs):
 
 
 @_with_tracer_wrapper
-def _wrap_get_execute_download_actions(tracer, wrapped, instance, args, kwargs):
+def _wrap_execute_download_actions(tracer, wrapped, instance, args, kwargs):
     with tracer.start_as_current_span(
             "conda_build.render.execute_download_actions",
             kind=SpanKind.INTERNAL,
@@ -277,7 +277,7 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         _wrap(conda_build.metadata, "MetaData.get_used_vars", _wrap_get_used_vars(tracer))
 
         _wrap(conda_build.render, "get_env_dependencies", _wrap_get_env_dependencies(tracer))
-        _wrap(conda_build.render, "execute_download_actions", _wrap_get_execute_download_actions(tracer))
+        _wrap(conda_build.render, "execute_download_actions", _wrap_execute_download_actions(tracer))
         _wrap(conda_build.render, "get_upstream_pins", _wrap_get_upstream_pins(tracer))
         _wrap(conda_build.render, "add_upstream_pins", _wrap_add_upstream_pins(tracer))
         _wrap(conda_build.render, "finalize_metadata", _wrap_finalize_metadata(tracer))
