@@ -272,7 +272,7 @@ class CondaBuildInstrumentor(BaseInstrumentor):
 
         _wrap(conda_build.metadata, "MetaData._get_contents", _wrap_get_contents(tracer))
         _wrap(conda_build.metadata, "MetaData.parse_again", _wrap_parse_again(tracer))
-        _wrap(conda_build.metadata, "MetaData.get_recipe_text", _wrap_get_recipe_text(tracer))
+        # _wrap(conda_build.metadata, "MetaData.get_recipe_text", _wrap_get_recipe_text(tracer))
         _wrap(conda_build.metadata, "MetaData.get_output_metadata", _wrap_get_output_metadata(tracer))
         _wrap(conda_build.metadata, "MetaData.get_used_vars", _wrap_get_used_vars(tracer))
 
