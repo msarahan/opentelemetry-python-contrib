@@ -38,6 +38,7 @@ API
 # pylint: disable=no-value-for-parameter
 
 import logging
+import os
 from typing import Collection
 
 import conda_build
@@ -46,14 +47,12 @@ import conda_build.metadata
 import conda_build.render
 from wrapt import wrap_function_wrapper as _wrap
 
+from opentelemetry import propagators
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.conda_build.package import _instruments
 from opentelemetry.instrumentation.conda_build.version import __version__
 from opentelemetry.instrumentation.utils import unwrap
 from opentelemetry.trace import SpanKind, get_tracer
-
-from opentelemetry.metrics import get_meter
-from opentelemetry.instrumentation.system_metrics import SystemMetricsInstrumentor
 
 logger = logging.getLogger(__name__)
 
@@ -72,17 +71,6 @@ def _with_tracer_wrapper(func):
         return wrapper
 
     return _with_tracer
-
-def _with_metrics_wrapper(func):
-    """Helper for providing tracer for wrapper functions."""
-
-    def _with_metrics(metrics):
-        def wrapper(wrapped, instance, args, kwargs):
-            return func(metrics, wrapped, instance, args, kwargs)
-
-        return wrapper
-
-    return _with_metrics
 
 
 @_with_tracer_wrapper
@@ -248,24 +236,11 @@ class CondaBuildInstrumentor(BaseInstrumentor):
             schema_url="https://opentelemetry.io/schemas/1.11.0",
         )
 
-        metrics_provider = kwargs.get("metrics_provider")
-        meter = get_meter(
-            __name__,
-            __version__,
-            metrics_provider,
-            schema_url="https://opentelemetry.io/schemas/1.11.0",
+        carrier = {"traceparent": os.getenv("TRACEPARENT")}
+        ctx = propagators.extract(
+          lambda x, y: x[y], carrier
         )
-
-        # to configure custom metrics
-        configuration = {
-            "system.memory.usage": ["used", "free", "cached"],
-            "system.cpu.time": ["idle", "user", "system", "irq"],
-            "system.network.io": ["transmit", "receive"],
-            "process.runtime.memory": ["rss", "vms"],
-            "process.runtime.cpu.time": ["user", "system"],
-            "process.runtime.context_switches": ["involuntary", "voluntary"],
-        }
-        SystemMetricsInstrumentor(config=configuration).instrument()
+        tracer.start_span("conda-build root process", context=ctx)
 
         _wrap(conda_build.api, "render", _wrap_render(tracer))
         _wrap(conda_build.api, "build", _wrap_build(tracer))

@@ -25,10 +25,10 @@ Usage
 
 .. code-block:: python
 
-    from conda-build import api
-    from opentelemetry.instrumentation.conda_build import CondaBuildInstrumentor
+    from boa.cli.mambabuild import api
+    from opentelemetry.instrumentation.boa import BoaInstrumentor
 
-    CondaBuildInstrumentor().instrument()
+    BoaInstrumentor().instrument()
 
     api.build(".")
 
@@ -52,9 +52,6 @@ from opentelemetry.instrumentation.boa.package import _instruments
 from opentelemetry.instrumentation.boa.version import __version__
 from opentelemetry.instrumentation.utils import unwrap
 from opentelemetry.trace import SpanKind, get_tracer
-
-from opentelemetry.metrics import get_meter
-from opentelemetry.instrumentation.system_metrics import SystemMetricsInstrumentor
 
 logger = logging.getLogger(__name__)
 
