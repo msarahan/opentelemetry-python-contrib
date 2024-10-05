@@ -239,8 +239,12 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         carrier = {"traceparent": os.getenv("TRACEPARENT")}
 
         PROPAGATOR = propagate.get_global_textmap()
+        class Getter:
+            def get(self, carrier, key):
+                return carrier.get(key)
+
         ctx = PROPAGATOR.extract(
-            carrier, getter=lambda x, y: x[y]
+            carrier, getter=Getter()
         )
 
         tracer.start_span("conda-build root process", context=ctx)
