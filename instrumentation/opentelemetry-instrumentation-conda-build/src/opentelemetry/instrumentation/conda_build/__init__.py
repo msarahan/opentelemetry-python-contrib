@@ -240,7 +240,7 @@ class CondaBuildInstrumentor(BaseInstrumentor):
 
         PROPAGATOR = propagate.get_global_textmap()
         ctx = PROPAGATOR.extract(
-          lambda x, y: x[y], carrier
+            carrier, getter=lambda x, y: x[y]
         )
 
         tracer.start_span("conda-build root process", context=ctx)
