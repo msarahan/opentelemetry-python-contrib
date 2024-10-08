@@ -52,7 +52,7 @@ from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.conda_build.package import _instruments
 from opentelemetry.instrumentation.conda_build.version import __version__
 from opentelemetry.instrumentation.utils import unwrap
-from opentelemetry.trace import SpanKind, get_tracer
+from opentelemetry.trace import Span, SpanKind, get_tracer
 
 logger = logging.getLogger(__name__)
 
@@ -223,6 +223,7 @@ class CondaBuildInstrumentor(BaseInstrumentor):
 
     See `BaseInstrumentor`
     """
+    root_span: Span | None = None
 
     def instrumentation_dependencies(self) -> Collection[str]:
         return _instruments
@@ -246,8 +247,9 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         ctx = PROPAGATOR.extract(
             carrier, getter=Getter()
         )
+        print("extracted context: %s", ctx)
 
-        tracer.start_span("conda-build root process", context=ctx)
+        self.root_span = tracer.start_span("conda-build root process", context=ctx)
 
         _wrap(conda_build.api, "render", _wrap_render(tracer))
         _wrap(conda_build.api, "build", _wrap_build(tracer))
@@ -270,3 +272,5 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         unwrap(conda_build.metadata.MetaData, "get_recipe_text")
         unwrap(conda_build.metadata.MetaData, "get_output_metadata")
         unwrap(conda_build.metadata.MetaData, "get_used_vars")
+        if self.root_span:
+            self.root_span.end()
