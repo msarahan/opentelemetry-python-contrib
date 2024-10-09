@@ -245,8 +245,6 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         print("extracted context: %s", ctx)
         context.attach(ctx)
 
-        self.root_span = tracer.start_span("conda-build root process")
-
         _wrap(conda_build.api, "render", _wrap_render(tracer))
         _wrap(conda_build.api, "build", _wrap_build(tracer))
 
@@ -268,5 +266,3 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         unwrap(conda_build.metadata.MetaData, "get_recipe_text")
         unwrap(conda_build.metadata.MetaData, "get_output_metadata")
         unwrap(conda_build.metadata.MetaData, "get_used_vars")
-        if self.root_span:
-            self.root_span.end()
