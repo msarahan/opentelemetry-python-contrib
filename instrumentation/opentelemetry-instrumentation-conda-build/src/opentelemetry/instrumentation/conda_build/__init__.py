@@ -53,6 +53,8 @@ from opentelemetry.instrumentation.conda_build.package import _instruments
 from opentelemetry.instrumentation.conda_build.version import __version__
 from opentelemetry.instrumentation.utils import unwrap
 from opentelemetry.trace import Span, SpanKind, get_tracer
+from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
+
 
 logger = logging.getLogger(__name__)
 
@@ -238,15 +240,8 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         )
 
         carrier = {"traceparent": os.getenv("TRACEPARENT")}
-
-        PROPAGATOR = propagate.get_global_textmap()
-        class Getter:
-            def get(self, carrier, key):
-                return carrier.get(key)
-
-        ctx = PROPAGATOR.extract(
-            carrier, getter=Getter()
-        )
+        print("carrier: %s", carrier)
+        ctx = TraceContextTextMapPropagator().extract(carrier)
         print("extracted context: %s", ctx)
 
         self.root_span = tracer.start_span("conda-build root process", context=ctx)
