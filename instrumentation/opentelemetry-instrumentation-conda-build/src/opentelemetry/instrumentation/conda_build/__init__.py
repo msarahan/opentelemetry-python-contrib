@@ -47,7 +47,7 @@ import conda_build.metadata
 import conda_build.render
 from wrapt import wrap_function_wrapper as _wrap
 
-from opentelemetry import propagate
+from opentelemetry import context
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.conda_build.package import _instruments
 from opentelemetry.instrumentation.conda_build.version import __version__
@@ -243,8 +243,9 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         print("carrier: %s", carrier)
         ctx = TraceContextTextMapPropagator().extract(carrier)
         print("extracted context: %s", ctx)
+        context.attach(ctx)
 
-        self.root_span = tracer.start_span("conda-build root process", context=ctx)
+        self.root_span = tracer.start_span("conda-build root process")
 
         _wrap(conda_build.api, "render", _wrap_render(tracer))
         _wrap(conda_build.api, "build", _wrap_build(tracer))
