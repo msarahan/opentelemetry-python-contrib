@@ -248,11 +248,11 @@ class CondaBuildInstrumentor(BaseInstrumentor):
         _wrap(conda_build.api, "render", _wrap_render(tracer))
         _wrap(conda_build.api, "build", _wrap_build(tracer))
 
-        _wrap(conda_build.metadata, "MetaData._get_contents", _wrap_get_contents(tracer))
-        _wrap(conda_build.metadata, "MetaData.parse_again", _wrap_parse_again(tracer))
-        _wrap(conda_build.metadata, "MetaData.get_recipe_text", _wrap_get_recipe_text(tracer))
-        _wrap(conda_build.metadata, "MetaData.get_output_metadata", _wrap_get_output_metadata(tracer))
-        _wrap(conda_build.metadata, "MetaData.get_used_vars", _wrap_get_used_vars(tracer))
+        # _wrap(conda_build.metadata, "MetaData._get_contents", _wrap_get_contents(tracer))
+        # _wrap(conda_build.metadata, "MetaData.parse_again", _wrap_parse_again(tracer))
+        # _wrap(conda_build.metadata, "MetaData.get_recipe_text", _wrap_get_recipe_text(tracer))
+        # _wrap(conda_build.metadata, "MetaData.get_output_metadata", _wrap_get_output_metadata(tracer))
+        # _wrap(conda_build.metadata, "MetaData.get_used_vars", _wrap_get_used_vars(tracer))
 
         _wrap(conda_build.render, "get_env_dependencies", _wrap_get_env_dependencies(tracer))
         _wrap(conda_build.render, "execute_download_actions", _wrap_execute_download_actions(tracer))
